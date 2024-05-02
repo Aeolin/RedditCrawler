@@ -40,16 +40,14 @@ container.MapScrapeControllers();
 
 var output = config.GetSection("Output").Get<OutputConfig>();
 var results = new JsonResultHandler<UserData>(output.Path, output.SaveBatchSize);
-var resultsWithPosts = new JsonResultHandler<UserData>(output.Path, output.SaveBatchSize, "usersdata_posts_batch_{0}.json", x => x.PostHistory.Count > 0);
 
 using var scraper = new Scraper(loggerFactory, container.GetInstance<ScraperConfiguration>(), container)
-	.WithResultHandler(resultsWithPosts)
 	.WithResultHandler(results);
 
 var watch = new Stopwatch();
 watch.Start();
 var cfg = container.GetService<RedditConfig>();
-var initialUrl = $"{cfg.Url}/r/{cfg.SubReddit}/{cfg.Sort}";
+var jobs = cfg.SubReddits.Select(x => ScrapeJob.Get($"{cfg.Url}/r/{x}/{cfg.Sort}")).ToArray();
 
-await scraper.RunAsync(ScrapeJob.Get(initialUrl));
+await scraper.RunAsync(jobs);
 Console.WriteLine($"Done, after {watch.Elapsed.TotalSeconds:#.0}s");

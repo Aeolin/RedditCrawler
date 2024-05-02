@@ -10,7 +10,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Aeolin.AwosFramework.Scraping" Version="1.0.6" />
+    <PackageReference Include="Aeolin.AwosFramework.Scraping" Version="1.0.7" />
     <PackageReference Include="Aeolin.AwosFramework.Scraping.Extensions.ReInject" Version="1.0.0" />
     <PackageReference Include="Aeolin.reInject" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />

@@ -9,7 +9,7 @@ namespace RedditCrawler
 	public class RedditConfig
 	{
 		public string Url { get; set; }
-		public string SubReddit { get; set; }
+		public string[] SubReddits { get; set; }
 		public string Sort { get; set; }
 		public int PostHistoryLength { get; set; } = 10;
 		public bool DistinctPostSubreddits { get; set; } = true;

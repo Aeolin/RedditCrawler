@@ -26,24 +26,27 @@ namespace RedditCrawler
 		}
 
 		[Route("https://old.reddit.com/r/{subreddit}/{sort}")]
-		public IScrapeResult ScrapeSubRedditAsync(string subreddit, string sort, [FromCss(".self .author", Attribute = "href")] IEnumerable<string> authors, [FromCss(".next-button a", Attribute = "href")] string next)
+		public IScrapeResult ScrapeSubRedditAsync(string subreddit, string sort, [FromXPath("//div[contains(@class, 'thing') and not(contains(@class, 'promoted')) and not(contains(@class, 'stickied'))]//a[contains(@class, 'author')]", Attribute = "href")] IEnumerable<string> authors, [FromCss(".next-button a", Attribute = "href")] string next)
 		{
 			var jobs = new List<ScrapeJob>();
-			foreach (var user in authors)
+			if (authors !=null)
 			{
-				var name = user.Split("/").Last();
-				if (_crawledUsers.Contains(name))
-					continue;
-
-				if (_crawledUsers.Count >= _reddit.UniqueUserCount)
+				foreach (var user in authors)
 				{
-					_logger.LogInformation("Unique user count reached");
-					return Follow(jobs);
-				}
+					var name = user.Split("/").Last();
+					if (_crawledUsers.Contains(name))
+						continue;
 
-				_crawledUsers.Add(name);
-				var data = new UserData { UserId = name };
-				jobs.Add(ScrapeJob.Get(user + "/submitted?sort=new", 1, data, true));
+					if (_crawledUsers.Count >= _reddit.UniqueUserCount)
+					{
+						_logger.LogInformation("Unique user count reached");
+						return Follow(jobs);
+					}
+
+					_crawledUsers.Add(name);
+					var data = new UserData { UserId = name };
+					jobs.Add(ScrapeJob.Get(user + "/submitted?sort=new", 1, data, true));
+				}
 			}
 
 			if (string.IsNullOrEmpty(next) == false && _crawledUsers.Count < _reddit.UniqueUserCount)
