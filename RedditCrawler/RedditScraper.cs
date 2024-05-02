@@ -56,7 +56,7 @@ namespace RedditCrawler
 		}
 
 		[Route("https://old.reddit.com/user/{userName}/submitted")]
-		public IScrapeResult ScrapeUserPostsAsync(string userName, [FromJob] UserData data, [FromCss("#siteTable > .thing")] IEnumerable<Post> posts, [FromCss(".next-button a", Attribute = "href")] string next)
+		public IScrapeResult ScrapeUserPostsAsync(string userName, [FromJob] UserData data, [FromXPath("//div[@data-nsfw='false' and contains(@class, 'thing')]")] IEnumerable<Post> posts, [FromCss(".next-button a", Attribute = "href")] string next)
 		{
 			if (_reddit.DistinctPostSubreddits)
 				posts = posts.DistinctBy(x => x.Subreddit);
